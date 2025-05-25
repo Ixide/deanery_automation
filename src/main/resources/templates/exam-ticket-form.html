@@ -16,7 +16,7 @@
         </div>
         <div class="mb-3">
             <label for="numberOfTickets" class="form-label">Количество билетов:</label>
-            <input type="number" class="form-control" id="numberOfTickets" th:field="*{numberOfTickets}" min="1" max="50" required>
+            <input type="number" class="form-control" id="numberOfTickets" th:field="*{numberOfTickets}" min="1" max="100" required>
         </div>
         <div class="mb-3">
             <label for="topicsToCover" class="form-label">Темы для билетов (через запятую или ключевые фразы):</label>
@@ -24,7 +24,7 @@
             <small class="form-text text-muted">Например: "Основные концепции ООП, коллекции Java, обработка исключений"</small>
         </div>
         <button type="submit" class="btn btn-primary">Сгенерировать билеты</button>
-        <a th:href="@{/}" class="btn btn-secondary ms-2">Назад</a>
+        <a th:href="@{/}" class="btn btn-secondary">Назад</a>
     </form>
 </div>
 

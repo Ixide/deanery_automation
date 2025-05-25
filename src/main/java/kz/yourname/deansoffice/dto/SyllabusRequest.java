@@ -6,5 +6,5 @@ import lombok.Data;
 public class SyllabusRequest {
     private String disciplineName;
     private String specialty;
-    private String educationalGoals;
+    private String educationalGoals; // Можно сделать опциональным
 }

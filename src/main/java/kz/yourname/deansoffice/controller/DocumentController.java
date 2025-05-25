@@ -1,4 +1,4 @@
-package kz.yourname.deansoffice.controller;
+package kz.yourname.deansoffice.controller; // Замените на ваш пакет
 
 import kz.yourname.deansoffice.dto.ExamTicketRequest;
 import kz.yourname.deansoffice.dto.SyllabusRequest;
@@ -81,7 +81,7 @@ public class DocumentController {
             byte[] docxBytes = docxExportService.createSyllabusDocx(syllabus);
 
             String safeDisciplineName = syllabus.getDisciplineInfo() != null && syllabus.getDisciplineInfo().getDisciplineName() != null ?
-                    syllabus.getDisciplineInfo().getDisciplineName().replaceAll("[^a-zA-Z0-9а-яА-ЯЁё_\\s-]", "").replace(" ", "_") :
+                    syllabus.getDisciplineInfo().getDisciplineName().replaceAll("[^a-zA-Z0-9а-яА-Я_-]", "_") :
                     "syllabus";
             String fileName = "syllabus_" + safeDisciplineName + ".docx";
 
@@ -144,10 +144,15 @@ public class DocumentController {
 
             byte[] docxBytes = docxExportService.createExamTicketsDocx(tickets, disciplineName);
 
-            String safeDisciplineName = disciplineName.replaceAll("[^a-zA-Z0-9а-яА-ЯЁё_\\s-]", "").replace(" ", "_");
+            String safeDisciplineName = disciplineName.replaceAll("[^a-zA-Z0-9а-яА-Я_-]", "_");
             String fileName = "exam_tickets_" + safeDisciplineName + ".docx";
 
             logger.info("Запрос на скачивание экзаменационных билетов: {}", fileName);
+
+            // Очистка сессии после успешной подготовки файла (опционально, но рекомендуется)
+            // session.removeAttribute("lastGeneratedTickets");
+            // session.removeAttribute("lastGeneratedTicketsDiscipline");
+
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")

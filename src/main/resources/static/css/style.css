@@ -1,0 +1,11 @@
+body {
+    /* display: flex; /* Уже есть в body class */
+    /* flex-direction: column; /* Уже есть в body class */
+    /* min-height: 100vh; /* Уже есть в body class */
+}
+
+/* Чтобы footer был всегда внизу */
+/* main {
+    flex: 1;
+} */
+/* Это уже решено через d-flex flex-column min-vh-100 на body и mt-auto на footer */
