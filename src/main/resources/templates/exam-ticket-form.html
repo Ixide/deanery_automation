@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: common-header(pageTitle=${pageTitle})}"></head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<div class="container mt-4">
+    <h2>Генерация экзаменационных билетов</h2>
+    <hr/>
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
+    <form th:action="@{/exam-tickets/generate}" th:object="${examTicketRequest}" method="post">
+        <div class="mb-3">
+            <label for="disciplineName" class="form-label">Название дисциплины:</label>
+            <input type="text" class="form-control" id="disciplineName" th:field="*{disciplineName}" required>
+        </div>
+        <div class="mb-3">
+            <label for="numberOfTickets" class="form-label">Количество билетов:</label>
+            <input type="number" class="form-control" id="numberOfTickets" th:field="*{numberOfTickets}" min="1" max="50" required>
+        </div>
+        <div class="mb-3">
+            <label for="topicsToCover" class="form-label">Темы для билетов (через запятую или ключевые фразы):</label>
+            <textarea class="form-control" id="topicsToCover" th:field="*{topicsToCover}" rows="3" required></textarea>
+            <small class="form-text text-muted">Например: "Основные концепции ООП, коллекции Java, обработка исключений"</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Сгенерировать билеты</button>
+        <a th:href="@{/}" class="btn btn-secondary ms-2">Назад</a>
+    </form>
+</div>
+
+<div th:replace="~{fragments/footer :: common-footer}"></div>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: common-header(pageTitle=${pageTitle})}"></head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<div class="container mt-5">
+    <div class="px-4 py-5 my-5 text-center">
+        <h1 class="display-5 fw-bold">Автоматизация документооборота деканата</h1>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4">Добро пожаловать в систему автоматической генерации учебных документов с использованием искусственного интеллекта. Выберите действие:</p>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <a th:href="@{/syllabus/new}" class="btn btn-primary btn-lg px-4 gap-3">Создать Силлабус</a>
+                <a th:href="@{/exam-tickets/new}" class="btn btn-outline-secondary btn-lg px-4">Создать Экз. Билеты</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: common-footer}"></div>
+</body>
+</html>

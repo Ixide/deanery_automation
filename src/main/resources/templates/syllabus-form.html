@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: common-header(pageTitle=${pageTitle})}"></head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<div class="container mt-4">
+  <h2>Генерация силлабуса</h2>
+  <hr/>
+  <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
+  <form th:action="@{/syllabus/generate}" th:object="${syllabusRequest}" method="post">
+    <div class="mb-3">
+      <label for="disciplineName" class="form-label">Название дисциплины:</label>
+      <input type="text" class="form-control" id="disciplineName" th:field="*{disciplineName}" required>
+    </div>
+    <div class="mb-3">
+      <label for="specialty" class="form-label">Специальность:</label>
+      <input type="text" class="form-control" id="specialty" th:field="*{specialty}" required>
+    </div>
+    <div class="mb-3">
+      <label for="educationalGoals" class="form-label">Образовательные цели (кратко):</label>
+      <textarea class="form-control" id="educationalGoals" th:field="*{educationalGoals}" rows="3" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Сгенерировать силлабус</button>
+    <a th:href="@{/}" class="btn btn-secondary ms-2">Назад</a>
+  </form>
+</div>
+
+<div th:replace="~{fragments/footer :: common-footer}"></div>
+</body>
+</html>
