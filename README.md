@@ -100,3 +100,40 @@
 5.  Для сгенерированных документов будет доступна кнопка "Скачать DOCX" для загрузки файла.
 
 ## Структура проекта (Основные директории)
+
+deans-office-automation/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── kz/yourname/deansoffice/  # Базовый пакет
+│   │   │       ├── config/               # Конфигурационные классы (AppConfig)
+│   │   │       ├── controller/           # Веб-контроллеры (DocumentController)
+│   │   │       ├── dto/                  # Data Transfer Objects (SyllabusRequest, ExamTicketRequest)
+│   │   │       ├── model/                # Модели данных (Syllabus, ExamTicket, ThematicPlanModule и др.)
+│   │   │       ├── repository/           # Репозитории Spring Data MongoDB
+│   │   │       ├── service/              # Сервисы (DocumentGenerationService, DocxExportService, GeminiService)
+│   │   │       └── DeansOfficeAutomationApplication.java # Главный класс
+│   │   └── resources/
+│   │       ├── static/                 # Статические ресурсы (CSS, JS)
+│   │       ├── templates/              # Шаблоны Thymeleaf (HTML)
+│   │       │   └── docx_templates/     # Папка для DOCX-шаблонов
+│   │       │       └── syllabus_template.docx # Ваш шаблон силлабуса
+│   │       └── application.properties  # Конфигурация приложения
+├── .gitignore                # Игнорируемые файлы для Git
+├── pom.xml                   # Файл конфигурации Maven
+└── README.md                 # Этот файл
+
+ Возможные доработки (To-Do / Future Enhancements)
+
+* [ ] Улучшение качества и гибкости парсинга ответов от Gemini API.
+* [ ] Более продвинутое форматирование DOCX документов, создаваемых программно (например, для экзаменационных билетов или для сложных элементов силлабуса, если отход от шаблона будет необходим).
+* [ ] Добавление поддержки генерации других типов учебных документов.
+* [ ] Внедрение системы аутентификации и авторизации пользователей.
+* [ ] Написание Unit и интеграционных тестов.
+* [ ] Добавление возможности загрузки DOCX-шаблона через интерфейс.
+* [ ] Улучшение пользовательского интерфейса.
+
+---
+
+Автор: Курмангазин Еламан
+Дата: Май 2025 г.
