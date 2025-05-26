@@ -4,13 +4,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssessmentCriteria {
-    private String gradingSystemType;
-    private Map<String, String> criteriaDetails;
-    private List<String> detailedBreakdown;
+public class ThematicPlanModule {
+    private String moduleNumberAndName;
+    private List<ThematicPlanTopic> topics;
 }

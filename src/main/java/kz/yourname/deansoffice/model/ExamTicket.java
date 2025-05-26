@@ -16,7 +16,7 @@ public class ExamTicket {
     private String id;
     private String disciplineName;
     private int ticketNumber;
-    private List<String> theoreticalQuestions; // Могут содержать <br/> для HTML
-    private List<String> practicalTasks;     // Могут содержать <br/> для HTML
+    private List<String> theoreticalQuestions;
+    private List<String> practicalTasks;
     private String generatedRawText;
 }

@@ -5,9 +5,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate; // Используем RestTemplate для простоты
+import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.ObjectMapper; // Для работы с JSON
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.Collections;
@@ -26,7 +26,7 @@ public class GeminiService {
     private String apiUrl;
 
     private final RestTemplate restTemplate;
-    private final ObjectMapper objectMapper; // Для парсинга JSON
+    private final ObjectMapper objectMapper;
 
     public GeminiService(RestTemplate restTemplate, ObjectMapper objectMapper) {
         this.restTemplate = restTemplate;

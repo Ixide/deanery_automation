@@ -6,5 +6,5 @@ import lombok.Data;
 public class ExamTicketRequest {
     private String disciplineName;
     private int numberOfTickets;
-    private String topicsToCover; // Например, через запятую или из существующего силлабуса
+    private String topicsToCover;
 }

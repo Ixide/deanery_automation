@@ -1,4 +1,4 @@
-package kz.yourname.deansoffice.controller; // Замените на ваш пакет
+package kz.yourname.deansoffice.controller;
 
 import kz.yourname.deansoffice.dto.ExamTicketRequest;
 import kz.yourname.deansoffice.dto.SyllabusRequest;
@@ -78,10 +78,11 @@ public class DocumentController {
             Syllabus syllabus = syllabusRepository.findById(syllabusId)
                     .orElseThrow(() -> new IllegalArgumentException("Силлабус с ID " + syllabusId + " не найден."));
 
-            byte[] docxBytes = docxExportService.createSyllabusDocx(syllabus);
+            // ИСПРАВЛЕН ВЫЗОВ МЕТОДА
+            byte[] docxBytes = docxExportService.createSyllabusDocxFromTemplate(syllabus);
 
             String safeDisciplineName = syllabus.getDisciplineInfo() != null && syllabus.getDisciplineInfo().getDisciplineName() != null ?
-                    syllabus.getDisciplineInfo().getDisciplineName().replaceAll("[^a-zA-Z0-9а-яА-Я_-]", "_") :
+                    syllabus.getDisciplineInfo().getDisciplineName().replaceAll("[^a-zA-Z0-9а-яА-ЯЁё_\\s-]", "").replace(" ", "_") :
                     "syllabus";
             String fileName = "syllabus_" + safeDisciplineName + ".docx";
 
@@ -142,17 +143,13 @@ public class DocumentController {
                 throw new IllegalArgumentException("Нет данных о билетах для скачивания. Пожалуйста, сгенерируйте их сначала.");
             }
 
+            // УБЕДИТЕСЬ, ЧТО МЕТОД С ТАКОЙ СИГНАТУРОЙ ЕСТЬ В DocxExportService
             byte[] docxBytes = docxExportService.createExamTicketsDocx(tickets, disciplineName);
 
-            String safeDisciplineName = disciplineName.replaceAll("[^a-zA-Z0-9а-яА-Я_-]", "_");
+            String safeDisciplineName = disciplineName.replaceAll("[^a-zA-Z0-9а-яА-ЯЁё_\\s-]", "").replace(" ", "_");
             String fileName = "exam_tickets_" + safeDisciplineName + ".docx";
 
             logger.info("Запрос на скачивание экзаменационных билетов: {}", fileName);
-
-            // Очистка сессии после успешной подготовки файла (опционально, но рекомендуется)
-            // session.removeAttribute("lastGeneratedTickets");
-            // session.removeAttribute("lastGeneratedTicketsDiscipline");
-
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")

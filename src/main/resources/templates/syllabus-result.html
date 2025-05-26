@@ -8,48 +8,144 @@
     <h2>Сгенерированный силлабус</h2>
     <hr/>
     <div th:if="${syllabus}">
-        <h4 th:if="${syllabus.disciplineInfo != null}"><strong th:text="${syllabus.disciplineInfo.disciplineName}"></strong></h4>
-        <p th:if="${syllabus.disciplineInfo != null}"><strong>Специальность:</strong> <span th:text="${syllabus.disciplineInfo.specialty}"></span></p>
-        <p th:if="${syllabus.disciplineInfo != null}"><strong>Образовательные цели:</strong> <span th:text="${syllabus.disciplineInfo.educationalGoals}"></span></p>
+        <div th:if="${syllabus.disciplineInfo != null}">
+            <h4 th:if="${syllabus.disciplineInfo.disciplineName}"><strong th:text="${syllabus.disciplineInfo.disciplineName}"></strong></h4>
+            <p><strong>Код дисциплины:</strong> <span th:text="${syllabus.courseCode != null ? syllabus.courseCode : '[Код не указан]'}"></span></p>
+            <p><strong>Специальность:</strong> <span th:text="${syllabus.disciplineInfo.specialty}"></span></p>
+            <p><strong>Образовательные цели:</strong> <span th:utext="${syllabus.disciplineInfo.educationalGoals}"></span></p>
+        </div>
+        <hr>
+
+        <h5>Контактная информация (пример):</h5>
+        <p><strong>Высшая школа:</strong> <span th:text="${syllabus.higherSchoolName != null ? syllabus.higherSchoolName : '[Нет данных]'}"></span></p>
+        <p><strong>Лектор:</strong> <span th:text="${syllabus.lectorNameAndPosition != null ? syllabus.lectorNameAndPosition : '[Нет данных]'}"></span></p>
+        <p><strong>E-mail и телефон (лектора):</strong> <span th:text="${syllabus.lectorEmailAndPhone != null ? syllabus.lectorEmailAndPhone : '[Нет данных]'}"></span></p>
+        <hr>
 
         <h5>Описание курса:</h5>
         <p><span th:utext="${syllabus.courseDescription != null ? syllabus.courseDescription : 'Нет данных'}"></span></p>
 
-        <h5>Темы лекций:</h5>
-        <ul>
-            <li th:each="topic : ${syllabus.lectureTopics}" th:text="${topic}"></li> <li th:if="${#lists.isEmpty(syllabus.lectureTopics)}">Нет данных</li>
+        <h5>Результаты обучения (РО):</h5>
+        <ul th:if="${syllabus.learningOutcomes != null and not #lists.isEmpty(syllabus.learningOutcomes)}">
+            <li th:each="outcome : ${syllabus.learningOutcomes}" th:utext="${outcome}"></li>
         </ul>
+        <p th:if="${syllabus.learningOutcomes == null or #lists.isEmpty(syllabus.learningOutcomes)}">Результаты обучения не сгенерированы.</p>
 
-        <h5>Темы практических занятий:</h5>
-        <ul>
-            <li th:each="topic : ${syllabus.practicalTopics}" th:text="${topic}"></li> <li th:if="${#lists.isEmpty(syllabus.practicalTopics)}">Нет данных</li>
+        <h5>Ключевые индикаторы РО (например, для РО 10, 13):</h5>
+        <ul th:if="${syllabus.keyRoIndicators != null and not #lists.isEmpty(syllabus.keyRoIndicators)}">
+            <li th:each="indicatorMap : ${syllabus.keyRoIndicators}">
+                <strong th:if="${indicatorMap.code}" th:utext="${indicatorMap.code} + ': '"></strong><span th:utext="${indicatorMap.indicator}"></span>
+            </li>
         </ul>
+        <p th:if="${syllabus.keyRoIndicators == null or #lists.isEmpty(syllabus.keyRoIndicators)}">Ключевые индикаторы РО не указаны.</p>
 
+        <h5>Индикаторы достижения РО по дисциплине (детальные):</h5>
+        <ul th:if="${syllabus.detailedRoIndicators != null and not #lists.isEmpty(syllabus.detailedRoIndicators)}">
+            <li th:each="indicatorMap : ${syllabus.detailedRoIndicators}">
+                <strong th:if="${indicatorMap.code}" th:utext="${indicatorMap.code} + ': '"></strong><span th:utext="${indicatorMap.indicator}"></span>
+            </li>
+        </ul>
+        <p th:if="${syllabus.detailedRoIndicators == null or #lists.isEmpty(syllabus.detailedRoIndicators)}">Детальные индикаторы РО не указаны.</p>
+
+        <h5>Пререквизиты:</h5>
+        <p th:utext="${syllabus.prerequisites != null ? syllabus.prerequisites : 'Нет данных'}"></p>
+
+        <h5>Постреквизиты:</h5>
+        <p th:utext="${syllabus.postrequisites != null ? syllabus.postrequisites : 'Нет данных'}"></p>
+
+        <h5>Тематический план:</h5>
+        <div th:if="${syllabus.thematicPlan != null and not #lists.isEmpty(syllabus.thematicPlan)}">
+            <div th:each="module : ${syllabus.thematicPlan}" class="module-block mb-3 border p-2">
+                <h6 class="module-title" th:utext="${module.moduleNumberAndName}">Название Модуля</h6>
+                <ul th:if="${module.topics != null and not #lists.isEmpty(module.topics)}" class="list-group list-group-flush">
+                    <li th:each="topic : ${module.topics}" class="list-group-item topic-item">
+                        <p class="mb-1">
+                            <strong>
+                                <span th:text="${topic.topicNumberInModule}"></span>.
+                                <span th:utext="${topic.generalTopicTitle != null ? topic.generalTopicTitle : '[Название темы не указано]'}"></span>
+                            </strong>
+                        </p>
+
+                        <div th:if="${topic.lectureTheme != null and not #strings.isEmpty(topic.lectureTheme)}" class="content-block ps-3">
+                            <small><em>Тема лекции:</em> <span th:utext="${topic.lectureTheme}"></span></small>
+                            <div th:if="${topic.lectureContent != null and not #lists.isEmpty(topic.lectureContent)}">
+                                <div th:each="content : ${topic.lectureContent}" th:utext="${content}" class="ms-2 small"></div>
+                            </div>
+                        </div>
+                        <div th:if="${topic.practicalTheme != null and not #strings.isEmpty(topic.practicalTheme)}" class="content-block ps-3">
+                            <small><em>Тема практического занятия:</em> <span th:utext="${topic.practicalTheme}"></span></small>
+                            <div th:if="${topic.practicalContent != null and not #lists.isEmpty(topic.practicalContent)}">
+                                <div th:each="content : ${topic.practicalContent}" th:utext="${content}" class="ms-2 small"></div>
+                            </div>
+                        </div>
+                        <div th:if="${topic.tasks != null and not #lists.isEmpty(topic.tasks)}" class="content-block ps-3">
+                            <small><em>Задания:</em></small>
+                            <ul><li th:each="task : ${topic.tasks}" th:utext="${task}" class="small"></li></ul>
+                        </div>
+                        <div th:if="${topic.srspTheme != null and not #strings.isEmpty(topic.srspTheme)}" class="content-block ps-3">
+                            <small><em>Тема СРСП:</em> <span th:utext="${topic.srspTheme}"></span></small>
+                        </div>
+                        <div th:if="${topic.srspTasksList != null and not #lists.isEmpty(topic.srspTasksList)}" class="content-block ps-3">
+                            <small><em>Задания СРСП:</em></small>
+                            <ul><li th:each="task : ${topic.srspTasksList}" th:utext="${task}" class="small"></li></ul>
+                        </div>
+                        <div class="mt-1">
+                            <small class="text-muted" th:if="${topic.lectureHours != null}">Л: <span th:text="${topic.lectureHours}"></span> ч.</small>
+                            <small class="text-muted ms-2" th:if="${topic.seminarHours != null}">П: <span th:text="${topic.seminarHours}"></span> ч.</small>
+                            <small class="text-muted ms-2" th:if="${topic.srspAndSrsHours != null}">СРСП/С: <span th:text="${topic.srspAndSrsHours}"></span> ч.</small>
+                        </div>
+                        <div th:if="${topic.roCovered != null and not #lists.isEmpty(topic.roCovered)}">
+                            <small class="text-muted">РО: <span th:each="ro, iterStat : ${topic.roCovered}" th:text="${ro} + (${iterStat.last} ? '' : ', ')"></span></small>
+                        </div>
+                    </li>
+                </ul>
+                <p th:if="${module.topics == null or #lists.isEmpty(module.topics)}">Темы для данного модуля не найдены.</p>
+            </div>
+        </div>
+        <p th:if="${syllabus.thematicPlan == null or #lists.isEmpty(syllabus.thematicPlan) or (syllabus.thematicPlan.get(0).moduleNumberAndName != null and syllabus.thematicPlan.get(0).moduleNumberAndName.contains('не удалось загрузить'))}">Тематический план не сгенерирован или содержит ошибки.</p>
         <h5>Список рекомендуемой литературы:</h5>
-        <ul>
-            <li th:each="lit : ${syllabus.literatureList}" th:text="${lit}"></li> <li th:if="${#lists.isEmpty(syllabus.literatureList)}">Нет данных</li>
+        <ul th:if="${syllabus.literatureList != null and not #lists.isEmpty(syllabus.literatureList)}">
+            <li th:each="lit : ${syllabus.literatureList}" th:utext="${lit}"></li>
         </ul>
+        <p th:if="${syllabus.literatureList == null or #lists.isEmpty(syllabus.literatureList)}">Нет данных.</p>
+
+        <h5>Интернет-ресурсы:</h5>
+        <ul th:if="${syllabus.internetResources != null and not #lists.isEmpty(syllabus.internetResources)}">
+            <li th:each="res : ${syllabus.internetResources}" th:utext="${res}"></li>
+        </ul>
+        <p th:if="${syllabus.internetResources == null or #lists.isEmpty(syllabus.internetResources)}">Нет данных.</p>
+
+        <h5>Программное обеспечение:</h5>
+        <ul th:if="${syllabus.softwareUsed != null and not #lists.isEmpty(syllabus.softwareUsed)}">
+            <li th:each="sw : ${syllabus.softwareUsed}" th:utext="${sw}"></li>
+        </ul>
+        <p th:if="${syllabus.softwareUsed == null or #lists.isEmpty(syllabus.softwareUsed)}">Нет данных.</p>
+
+        <h5>Политика дисциплины:</h5>
+        <p th:utext="${syllabus.disciplinePolicyText != null ? syllabus.disciplinePolicyText : 'Нет данных'}"></p>
 
         <h5>Критерии оценки:</h5>
         <div th:if="${syllabus.assessmentCriteria != null}">
             <p><strong>Тип системы:</strong> <span th:text="${syllabus.assessmentCriteria.gradingSystemType}"></span></p>
-            <h6>Детали:</h6>
-            <ul th:if="${syllabus.assessmentCriteria.criteriaDetails != null and not #maps.isEmpty(syllabus.assessmentCriteria.criteriaDetails)}">
-                <li th:each="entry : ${syllabus.assessmentCriteria.criteriaDetails}">
-                    <span th:text="${entry.key} + ': ' + ${entry.value}"></span>
-                </li>
-            </ul>
-            <p th:if="${syllabus.assessmentCriteria.criteriaDetails == null or #maps.isEmpty(syllabus.assessmentCriteria.criteriaDetails)}">Нет данных о деталях.</p>
-
+            <div th:if="${syllabus.assessmentCriteria.criteriaDetails != null and not #maps.isEmpty(syllabus.assessmentCriteria.criteriaDetails)}">
+                <h6>Детали:</h6>
+                <ul><li th:each="entry : ${syllabus.assessmentCriteria.criteriaDetails}" th:text="${entry.key} + ': ' + ${entry.value}"></li></ul>
+            </div>
+            <p th:if="${syllabus.assessmentCriteria.criteriaDetails == null or #maps.isEmpty(syllabus.assessmentCriteria.criteriaDetails)}">Детали критериев не указаны.</p>
             <h6>Развернутое описание:</h6>
             <div th:if="${syllabus.assessmentCriteria.detailedBreakdown != null and not #lists.isEmpty(syllabus.assessmentCriteria.detailedBreakdown)}">
-                <div th:each="detail : ${syllabus.assessmentCriteria.detailedBreakdown}">
-                    <p th:utext="${detail}"></p>
-                </div>
+                <div th:each="detail : ${syllabus.assessmentCriteria.detailedBreakdown}" th:utext="${detail}"></div>
             </div>
             <p th:if="${syllabus.assessmentCriteria.detailedBreakdown == null or #lists.isEmpty(syllabus.assessmentCriteria.detailedBreakdown)}">Нет развернутого описания.</p>
         </div>
         <div th:unless="${syllabus.assessmentCriteria != null}"><p>Нет данных о критериях оценки.</p></div>
+
+        <h5>Экзаменационные вопросы:</h5>
+        <ul th:if="${syllabus.examinationQuestions != null and not #lists.isEmpty(syllabus.examinationQuestions)}">
+            <li th:each="question : ${syllabus.examinationQuestions}" th:utext="${question}"></li>
+        </ul>
+        <p th:if="${syllabus.examinationQuestions == null or #lists.isEmpty(syllabus.examinationQuestions)}">Экзаменационные вопросы не сгенерированы.</p>
+
 
         <hr/>
         <h5>Сырой текст от ИИ (для отладки):</h5>
@@ -57,10 +153,7 @@
 
         <div class="mt-3">
             <a th:if="${syllabus.id != null}" th:href="@{/syllabus/download/{syllabusId}(syllabusId=${syllabus.id})}" class="btn btn-success">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
-                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
                 Скачать DOCX
             </a>
         </div>
