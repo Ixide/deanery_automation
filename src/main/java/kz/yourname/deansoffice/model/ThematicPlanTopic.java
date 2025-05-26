@@ -1,4 +1,4 @@
-package kz.yourname.deansoffice.model;
+package kz.yourname.deansoffice.model; // Замените на ваш пакет
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 @AllArgsConstructor
 public class ThematicPlanTopic {
     private String topicNumberInModule;
-    private String generalTopicTitle;
+    private String generalTopicTitle; // Общее название темы из строки "Тема X.X: Название"
     private String lectureTheme;
     private String practicalTheme;
     private List<String> tasks = new ArrayList<>();

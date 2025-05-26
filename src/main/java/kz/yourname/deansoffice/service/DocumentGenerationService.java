@@ -1,4 +1,4 @@
-package kz.yourname.deansoffice.service;
+package kz.yourname.deansoffice.service; // Замените kz.yourname.deansoffice на ваш пакет
 
 import kz.yourname.deansoffice.dto.ExamTicketRequest;
 import kz.yourname.deansoffice.dto.SyllabusRequest;
@@ -59,7 +59,7 @@ public class DocumentGenerationService {
                         "МАРКЕР_ТЕМАТИЧЕСКИЙ_ПЛАН_НАЧАЛО%n" +
                         "[Для каждого модуля укажи:%n" +
                         "МОДУЛЬ [Номер модуля]: [Название модуля]%n" +
-                        "  Тема [Номер темы в модуле, например 1.1]: [ОБЩЕЕ НАЗВАНИЕ ТЕМЫ]%n" + // ИИ должен дать здесь общее название темы
+                        "  Тема [Номер темы в модуле, например 1.1]: [ОБЩЕЕ НАЗВАНИЕ ТЕМЫ]%n" +
                         "    Тема лекции: [Уточняющее название/содержание темы лекции]%n" +
                         "    Лекция: [детальное содержание лекции по теме, может быть несколько предложений]%n" +
                         "    Тема практического занятия: [Уточняющее название/содержание темы практического занятия]%n" +
@@ -79,7 +79,7 @@ public class DocumentGenerationService {
                         "МАРКЕР_ПО_НАЧАЛО%n[Здесь список программного обеспечения.]%nМАРКЕР_ПО_КОНЕЦ%n%n" +
                         "МАРКЕР_ПОЛИТИКА_ДИСЦИПЛИНЫ_НАЧАЛО%n[Здесь текст политики дисциплины.]%nМАРКЕР_ПОЛИТИКА_ДИСЦИПЛИНЫ_КОНЕЦ%n%n" +
                         "МАРКЕР_КРИТЕРИИ_ОЦЕНКИ_НАЧАЛО%n[Здесь описание критериев оценки.]%nМАРКЕР_КРИТЕРИИ_ОЦЕНКИ_КОНЕЦ%n%n" +
-                        "МАРКЕР_ЭКЗАМЕНАЦИОННЫЕ_ВОПРОСЫ_НАЧАЛО%n[Здесь список экзаменационных вопросов. Сгенерируй минимум 20 экзаменационных вопросов по темам]%nМАРКЕР_ЭКЗАМЕНАЦИОННЫЕ_ВОПРОСЫ_КОНЕЦ%n",
+                        "МАРКЕР_ЭКЗАМЕНАЦИОННЫЕ_ВОПРОСЫ_НАЧАЛО%n[Здесь список экзаменационных вопросов. Сгенерируй минимум 20 вопросов.]%nМАРКЕР_ЭКЗАМЕНАЦИОННЫЕ_ВОПРОСЫ_КОНЕЦ%n",
                 request.getDisciplineName(),
                 request.getSpecialty(),
                 request.getEducationalGoals()
@@ -123,7 +123,6 @@ public class DocumentGenerationService {
 
         syllabus.setThematicPlan(parseThematicPlan(extractSectionByMarkers(generatedTextFromAI, "МАРКЕР_ТЕМАТИЧЕСКИЙ_ПЛАН_НАЧАЛО", "МАРКЕР_ТЕМАТИЧЕСКИЙ_ПЛАН_КОНЕЦ", "Тематический план не сгенерирован.")));
 
-        // ... (заполнение плейсхолдеров и вычисление общих часов как в последнем полном коде) ...
         syllabus.setHigherSchoolName(syllabus.getHigherSchoolName() !=null ? syllabus.getHigherSchoolName() : "[Название высшей школы]");
         syllabus.setLectorNameAndPosition(syllabus.getLectorNameAndPosition() != null ? syllabus.getLectorNameAndPosition() : "[ФИО лектора, должность]");
         syllabus.setLectorEmailAndPhone(syllabus.getLectorEmailAndPhone() != null ? syllabus.getLectorEmailAndPhone() : "[email], [телефон]");
@@ -150,10 +149,42 @@ public class DocumentGenerationService {
         syllabus.setFinalControlType(syllabus.getFinalControlType() != null ? syllabus.getFinalControlType() : "[Форма контроля]");
 
         syllabus.setLiteratureList(formatListForHtmlDisplay(parseToList(extractSectionByMarkers(generatedTextFromAI, "МАРКЕР_ЛИТЕРАТУРА_НАЧАЛО", "МАРКЕР_ЛИТЕРАТУРА_КОНЕЦ", "Литература не сгенерирована."))));
-        // ... (остальные секции)
+        syllabus.setInternetResources(formatListForHtmlDisplay(parseToList(extractSectionByMarkers(generatedTextFromAI, "МАРКЕР_ИНТЕРНЕТ_РЕСУРСЫ_НАЧАЛО", "МАРКЕР_ИНТЕРНЕТ_РЕСУРСЫ_КОНЕЦ", "Интернет-ресурсы не сгенерированы."))));
+        syllabus.setSoftwareUsed(formatListForHtmlDisplay(parseToList(extractSectionByMarkers(generatedTextFromAI, "МАРКЕР_ПО_НАЧАЛО", "МАРКЕР_ПО_КОНЕЦ", "ПО не сгенерировано."))));
+        syllabus.setDisciplinePolicyText(formatTextForHtmlDisplay(extractSectionByMarkers(generatedTextFromAI, "МАРКЕР_ПОЛИТИКА_ДИСЦИПЛИНЫ_НАЧАЛО", "МАРКЕР_ПОЛИТИКА_ДИСЦИПЛИНЫ_КОНЕЦ", "Политика дисциплины не сгенерирована.")));
+
+        AssessmentCriteria criteria = new AssessmentCriteria();
+        String criteriaText = extractSectionByMarkers(generatedTextFromAI, "МАРКЕР_КРИТЕРИИ_ОЦЕНКИ_НАЧАЛО", "МАРКЕР_КРИТЕРИИ_ОЦЕНКИ_КОНЕЦ", "Критерии оценки не сгенерированы.");
+        criteria.setDetailedBreakdown(formatListForHtmlDisplay(parseToList(criteriaText)));
+        criteria.setGradingSystemType("См. описание");
+        syllabus.setAssessmentCriteria(criteria);
+
+        String examQuestionsStartMarker = "МАРКЕР_ЭКЗАМЕНАЦИОННЫЕ_ВОПРОСЫ_НАЧАЛО";
+        String examQuestionsEndMarker = "МАРКЕР_ЭКЗАМЕНАЦИОННЫЕ_ВОПРОСЫ_КОНЕЦ";
+        String defaultExamText = "Экзаменационные вопросы не сгенерированы.";
+
+        System.out.println("--- ОТЛАДКА: Поиск маркеров для экзаменационных вопросов ---");
+        System.out.println("Ищем начальный маркер: [" + examQuestionsStartMarker + "]");
+        int startIndex = generatedTextFromAI.toLowerCase().indexOf(examQuestionsStartMarker.toLowerCase());
+        System.out.println("Индекс начального маркера: " + startIndex);
+
+        if (startIndex != -1) {
+            int actualStartIndex = startIndex + examQuestionsStartMarker.length();
+            System.out.println("Ищем конечный маркер: [" + examQuestionsEndMarker + "] после индекса " + actualStartIndex);
+            int endIndex = generatedTextFromAI.toLowerCase().indexOf(examQuestionsEndMarker.toLowerCase(), actualStartIndex);
+            System.out.println("Индекс конечного маркера: " + endIndex);
+            if (endIndex != -1) {
+                System.out.println("Оба маркера для экзаменационных вопросов найдены!");
+            } else {
+                System.out.println("КОНЕЧНЫЙ МАРКЕР для экзаменационных вопросов НЕ НАЙДЕН!");
+            }
+        } else {
+            System.out.println("НАЧАЛЬНЫЙ МАРКЕР для экзаменационных вопросов НЕ НАЙДЕН!");
+        }
+        System.out.println("--- КОНЕЦ ОТЛАДКИ: Поиск маркеров ---");
+        syllabus.setExaminationQuestions(formatListForHtmlDisplay(parseToList(extractSectionByMarkers(generatedTextFromAI, examQuestionsStartMarker, examQuestionsEndMarker, defaultExamText))));
 
         System.out.println("--- generateSyllabus: Итоговый объект syllabus.thematicPlan ---");
-        // ... (отладочный вывод thematicPlan) ...
         if (syllabus.getThematicPlan() != null) {
             System.out.println("Количество модулей: " + syllabus.getThematicPlan().size());
             for (ThematicPlanModule module : syllabus.getThematicPlan()) {
@@ -161,7 +192,7 @@ public class DocumentGenerationService {
                 if (module.getTopics() != null) {
                     System.out.println("    Тем в модуле: " + module.getTopics().size());
                     for (ThematicPlanTopic topic : module.getTopics()) {
-                        System.out.println("      Тема " + topic.getTopicNumberInModule() + ": " + topic.getGeneralTopicTitle()); // Используем generalTopicTitle
+                        System.out.println("      Тема " + topic.getTopicNumberInModule() + ": " + topic.getGeneralTopicTitle());
                         System.out.println("        Тема лекции: " + topic.getLectureTheme());
                         System.out.println("        Содержание лекции: " + topic.getLectureContent());
                         System.out.println("        Тема практики: " + topic.getPracticalTheme());
@@ -177,22 +208,26 @@ public class DocumentGenerationService {
         } else { System.out.println("syllabus.thematicPlan is null"); }
         System.out.println("--- generateSyllabus: Конец отладки thematicPlan ---");
 
-
         return syllabusRepository.save(syllabus);
     }
 
     private String extractSectionByMarkers(String text, String startMarker, String endMarker, String defaultText) {
-        // ... (код без изменений) ...
         if (text == null || text.isBlank()) return defaultText;
         try {
             String lowerText = text.toLowerCase();
             String lowerStartMarker = startMarker.toLowerCase();
             String lowerEndMarker = endMarker.toLowerCase();
             int startIndexOriginal = lowerText.indexOf(lowerStartMarker);
-            if (startIndexOriginal == -1) return defaultText + " (не найден нач. маркер: " + startMarker + ")";
+            if (startIndexOriginal == -1) {
+                System.err.println("extractSectionByMarkers: Начальный маркер '" + startMarker + "' не найден.");
+                return defaultText + " (не найден нач. маркер: " + startMarker + ")";
+            }
             int actualStartIndex = startIndexOriginal + startMarker.length();
             int endIndexOriginal = lowerText.indexOf(lowerEndMarker, actualStartIndex);
-            if (endIndexOriginal == -1) return defaultText + " (не найден кон. маркер: " + endMarker + ")";
+            if (endIndexOriginal == -1) {
+                System.err.println("extractSectionByMarkers: Конечный маркер '" + endMarker + "' не найден после начального.");
+                return defaultText + " (не найден кон. маркер: " + endMarker + ")";
+            }
             return text.substring(actualStartIndex, endIndexOriginal).trim();
         } catch (Exception e) {
             System.err.println("Ошибка извлечения секции: " + startMarker + " -> " + endMarker + ": " + e.getMessage());
@@ -201,7 +236,6 @@ public class DocumentGenerationService {
     }
 
     private List<String> parseToList(String textBlock) {
-        // ... (код без изменений) ...
         if (textBlock == null || textBlock.isBlank() || textBlock.contains("не сгенерирован") || textBlock.contains("не найден") || textBlock.contains("ошибка парсинга")) {
             return List.of(textBlock != null ? textBlock : "");
         }
@@ -280,12 +314,12 @@ public class DocumentGenerationService {
             m = topicPattern.matcher(line);
             if (m.matches() && currentModule != null) {
                 String topicNumber = m.group(1).trim();
-                String generalTopicTitle = m.group(2).trim(); // Захватываем ОБЩЕЕ НАЗВАНИЕ ТЕМЫ
+                String generalTopicTitle = m.group(2).trim();
                 System.out.println("  НАЙДЕНО НАЧАЛО ТЕМЫ (по паттерну topicPattern): Номер '" + topicNumber + "', Общее название: '" + generalTopicTitle + "'");
                 if (currentTopic != null) { currentModule.getTopics().add(currentTopic); System.out.println("    Добавлена предыдущая тема '" + currentTopic.getTopicNumberInModule() + "' в модуль: " + currentModule.getModuleNumberAndName());}
                 currentTopic = new ThematicPlanTopic();
                 currentTopic.setTopicNumberInModule(topicNumber);
-                currentTopic.setGeneralTopicTitle(generalTopicTitle); // Устанавливаем общее название темы
+                currentTopic.setGeneralTopicTitle(generalTopicTitle);
                 currentSubSectionType = null;
                 continue;
             }
@@ -321,7 +355,7 @@ public class DocumentGenerationService {
                             if (!currentTopic.getPracticalContent().isEmpty()) { currentTopic.getPracticalContent().set(currentTopic.getPracticalContent().size() - 1, currentTopic.getPracticalContent().get(currentTopic.getPracticalContent().size() - 1) + System.lineSeparator() + line);
                             } else { currentTopic.getPracticalContent().add(line); } break;
                         case "tasks":
-                            if (!currentTopic.getTasks().isEmpty()) { currentTopic.getTasks().set(currentTopic.getTasks().size() - 1, currentTopic.getTasks().get(currentTopic.getTasks().size() - 1) + " " + line); // Добавляем к последнему заданию через пробел
+                            if (!currentTopic.getTasks().isEmpty()) { currentTopic.getTasks().set(currentTopic.getTasks().size() - 1, currentTopic.getTasks().get(currentTopic.getTasks().size() - 1) + " " + line);
                             } else { currentTopic.getTasks().add(line); } break;
                         case "srsp_tasks":
                             if (!currentTopic.getSrspTasksList().isEmpty()) { currentTopic.getSrspTasksList().set(currentTopic.getSrspTasksList().size() - 1, currentTopic.getSrspTasksList().get(currentTopic.getSrspTasksList().size() - 1) + " " + line);
@@ -348,7 +382,7 @@ public class DocumentGenerationService {
             module.setModuleNumberAndName(formatTextForHtmlDisplay(module.getModuleNumberAndName()));
             if (module.getTopics() != null) {
                 for (ThematicPlanTopic topic : module.getTopics()) {
-                    topic.setGeneralTopicTitle(formatTextForHtmlDisplay(topic.getGeneralTopicTitle())); // Форматируем новое поле
+                    topic.setGeneralTopicTitle(formatTextForHtmlDisplay(topic.getGeneralTopicTitle()));
                     topic.setLectureTheme(formatTextForHtmlDisplay(topic.getLectureTheme()));
                     topic.setPracticalTheme(formatTextForHtmlDisplay(topic.getPracticalTheme()));
                     topic.setTasks(formatListForHtmlDisplay(topic.getTasks()));
@@ -360,14 +394,13 @@ public class DocumentGenerationService {
             }
         }
         System.out.println("--- КОНЕЦ ОТЛАДКИ parseThematicPlan, модулей обработано: " + modules.size() + " ---");
-        if (!modules.isEmpty() && !modules.get(0).getModuleNumberAndName().contains("не удалось загрузить") && modules.get(0).getTopics() != null) {
+        if (!modules.isEmpty() && modules.get(0).getTopics() != null && !modules.get(0).getModuleNumberAndName().contains("не удалось загрузить")) {
             System.out.println("Тем в первом обработанном модуле: " + modules.get(0).getTopics().size());
         }
         return modules;
     }
 
     public List<ExamTicket> generateExamTickets(ExamTicketRequest request) {
-        // ... (код этого метода без изменений) ...
         List<ExamTicket> tickets = new ArrayList<>();
         String basePrompt = String.format(
                 "Сгенерируй экзаменационный билет для дисциплины \"%s\". " +
