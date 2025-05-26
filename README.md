@@ -101,27 +101,44 @@
 
 ## Структура проекта (Основные директории)
 
+```
 deans-office-automation/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── kz/yourname/deansoffice/  # Базовый пакет
-│   │   │       ├── config/               # Конфигурационные классы (AppConfig)
-│   │   │       ├── controller/           # Веб-контроллеры (DocumentController)
-│   │   │       ├── dto/                  # Data Transfer Objects (SyllabusRequest, ExamTicketRequest)
-│   │   │       ├── model/                # Модели данных (Syllabus, ExamTicket, ThematicPlanModule и др.)
-│   │   │       ├── repository/           # Репозитории Spring Data MongoDB
-│   │   │       ├── service/              # Сервисы (DocumentGenerationService, DocxExportService, GeminiService)
-│   │   │       └── DeansOfficeAutomationApplication.java # Главный класс
-│   │   └── resources/
-│   │       ├── static/                 # Статические ресурсы (CSS, JS)
-│   │       ├── templates/              # Шаблоны Thymeleaf (HTML)
-│   │       │   └── docx_templates/     # Папка для DOCX-шаблонов
-│   │       │       └── syllabus_template.docx # Ваш шаблон силлабуса
-│   │       └── application.properties  # Конфигурация приложения
-├── .gitignore                # Игнорируемые файлы для Git
-├── pom.xml                   # Файл конфигурации Maven
-└── README.md                 # Этот файл
+├── .git/                     # Скрытая папка Git (не видна на GitHub обычно)
+├── .gitignore                # Файл для игнорируемых Git'ом файлов
+├── mvnw                      # Maven wrapper (Linux/macOS)
+├── mvnw.cmd                  # Maven wrapper (Windows)
+├── pom.xml                   # Файл конфигурации Maven (зависимости, сборка)
+├── README.md                 # Этот файл
+└── src/
+    └── main/
+        ├── java/
+        │   └── kz/yourname/deansoffice/  # Ваш базовый пакет
+        │       ├── DeansOfficeAutomationApplication.java # Главный класс
+        │       ├── config/               # Конфигурационные классы (AppConfig)
+        │       ├── controller/           # Веб-контроллеры (DocumentController)
+        │       ├── dto/                  # Data Transfer Objects (SyllabusRequest, ExamTicketRequest)
+        │       ├── model/                # Модели данных (Syllabus, ExamTicket, ThematicPlanModule и др.)
+        │       ├── repository/           # Репозитории Spring Data MongoDB
+        │       └── service/              # Сервисы (DocumentGenerationService, DocxExportService, GeminiService)
+        └── resources/
+            ├── static/                 # Статические ресурсы (CSS, JS, изображения)
+            │   ├── css/
+            │   │   └── style.css
+            │   └── js/
+            │       └── script.js
+            ├── templates/              # Шаблоны Thymeleaf (HTML)
+            │   ├── fragments/          # Фрагменты шаблонов (header, footer)
+            │   │   ├── header.html
+            │   │   └── footer.html
+            │   ├── index.html
+            │   ├── syllabus-form.html
+            │   ├── syllabus-result.html
+            │   ├── exam-ticket-form.html
+            │   └── exam-ticket-result.html
+            │   └── docx_templates/     # Папка для DOCX-шаблонов
+            │       └── syllabus_template.docx # Ваш шаблон силлабуса
+            └── application.properties  # Конфигурация приложения
+```
 
  Возможные доработки (To-Do / Future Enhancements)
 
